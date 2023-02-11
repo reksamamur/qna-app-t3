@@ -25,6 +25,9 @@ const server = z.object({
   EMAIL_SERVER_USER: z.string().min(1),
   EMAIL_SERVER_PASSWORD: z.string().min(1),
   EMAIL_FROM: z.string().min(1).email(),
+  // NextAuthJS - Google Provider
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
 });
 
 /**
@@ -51,6 +54,8 @@ const processEnv = {
   EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
   EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
   EMAIL_FROM: process.env.EMAIL_FROM,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
