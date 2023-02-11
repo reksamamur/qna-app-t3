@@ -28,6 +28,8 @@ const server = z.object({
   // NextAuthJS - Google Provider
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_CLIENT_SECRET: z.string().min(1),
+  // Redis
+  REDIS_URL: z.string(),
 });
 
 /**
@@ -56,6 +58,7 @@ const processEnv = {
   EMAIL_FROM: process.env.EMAIL_FROM,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  REDIS_URL: process.env.REDIS_URL,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

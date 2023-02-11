@@ -1,3 +1,7 @@
+import Redis from "ioredis";
+import { env } from "../env.mjs";
+
+// DOESN'T WORK - Because recreated on every request
 const _localCache = new Map<string, { data: string; expire: Date }>();
 const localCache = {
   get: <T>(key: string) => {
@@ -22,6 +26,31 @@ const localCache = {
 
     return Promise.resolve();
   },
+  delete: (key: string) => {
+    _localCache.delete(key);
+
+    return Promise.resolve();
+  },
 };
 
-export const cache = localCache;
+const redis = new Redis(env.REDIS_URL);
+
+const redisCache = {
+  get: async <T>(key: string) => {
+    const cache = await redis.get(key);
+
+    // return if empty
+    if (!cache) return cache;
+
+    return JSON.parse(cache) as T;
+  },
+  set: async <T>(key: string, data: T) => {
+    const expireDefault = 60; // 1 minutes
+    await redis.set(key, JSON.stringify(data), "EX", expireDefault);
+  },
+  delete: async (key: string) => {
+    await redis.del(key);
+  },
+};
+
+export const cache = env.NODE_ENV !== "production" ? localCache : redisCache;
