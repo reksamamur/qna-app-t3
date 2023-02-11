@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { addQuestionSchema } from "../../../utils/zodSchema";
 
 export const questionRouter = createTRPCRouter({
   getAllByUserId: protectedProcedure.query(({ ctx }) => {
@@ -11,20 +12,20 @@ export const questionRouter = createTRPCRouter({
   }),
 
   addQuestion: protectedProcedure
-    .input(
-      z.object({
-        talkSessionId: z.string().min(1),
-        question: z.string().min(1),
-      })
-    )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.question.create({
+    .input(addQuestionSchema)
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.prisma.question.create({
+        select: { id: true },
         data: {
           question: input.question,
           talkSessionId: input.talkSessionId,
           userId: ctx.session.user.id,
         },
       });
+
+      await ctx.cache.delete(input.talkSessionId);
+
+      return result;
     }),
 
   markQuestionAsAnswered: protectedProcedure
@@ -35,15 +36,19 @@ export const questionRouter = createTRPCRouter({
         include: { talkSession: true },
       });
 
-      if (!question) return null;
+      if (!question) throw new Error("Not Found");
 
       const isOwnerOfTalkSession =
-        question.talkSession.userId !== ctx.session.user.id;
-      if (!isOwnerOfTalkSession) return null;
+        question.talkSession.userId === ctx.session.user.id;
+      if (!isOwnerOfTalkSession) throw new Error("Not Authorized");
 
-      return await ctx.prisma.question.update({
+      const result = await ctx.prisma.question.update({
         where: { id: question.id },
         data: { isAnswered: true },
       });
+
+      await ctx.cache.delete(question.talkSessionId);
+
+      return result;
     }),
 });

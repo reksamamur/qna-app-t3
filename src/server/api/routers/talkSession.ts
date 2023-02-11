@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-import type { TalkSession } from "@prisma/client";
+import type { Question, TalkSession, User } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { addTalkSessionSchema } from "../../../utils/zodSchema";
 
 export const talkSessionRouter = createTRPCRouter({
   getAllByUserId: protectedProcedure.query(({ ctx }) => {
@@ -12,7 +13,7 @@ export const talkSessionRouter = createTRPCRouter({
   }),
 
   addTalkSession: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
+    .input(addTalkSessionSchema)
     .mutation(({ ctx, input }) => {
       return ctx.prisma.talkSession.create({
         select: { id: true },
@@ -23,22 +24,37 @@ export const talkSessionRouter = createTRPCRouter({
   getAllQuestionInSession: protectedProcedure
     .input(z.object({ talkSessionId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      const cachedTalkSession = await ctx.cache.get<TalkSession>(
-        input.talkSessionId
-      );
+      type TalkSessionIncludeQuestionAndUser = TalkSession & {
+        question: (Question & {
+          user: User;
+        })[];
+      };
 
-      if (cachedTalkSession) return cachedTalkSession;
+      const cachedTalkSession =
+        await ctx.cache.get<TalkSessionIncludeQuestionAndUser>(
+          input.talkSessionId
+        );
+
+      if (cachedTalkSession) {
+        console.log("from cache");
+        return cachedTalkSession;
+      }
 
       const talkSession = await ctx.prisma.talkSession.findFirst({
         where: { id: { equals: input.talkSessionId } },
         include: {
-          question: true,
+          question: {
+            include: { user: true },
+          },
         },
       });
 
       if (!talkSession) return undefined;
 
-      await ctx.cache.set<TalkSession>(input.talkSessionId, talkSession);
+      await ctx.cache.set<TalkSessionIncludeQuestionAndUser>(
+        input.talkSessionId,
+        talkSession
+      );
 
       return talkSession;
     }),
