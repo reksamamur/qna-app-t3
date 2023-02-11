@@ -39,8 +39,7 @@ const redisCache = {
   get: async <T>(key: string) => {
     const cache = await redis.get(key);
 
-    // return if empty
-    if (!cache) return cache;
+    if (!cache) return null;
 
     return JSON.parse(cache) as T;
   },

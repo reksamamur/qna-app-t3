@@ -35,10 +35,7 @@ export const talkSessionRouter = createTRPCRouter({
           input.talkSessionId
         );
 
-      if (cachedTalkSession) {
-        console.log("from cache");
-        return cachedTalkSession;
-      }
+      if (cachedTalkSession) return cachedTalkSession;
 
       const talkSession = await ctx.prisma.talkSession.findFirst({
         where: { id: { equals: input.talkSessionId } },
