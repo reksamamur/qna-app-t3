@@ -1,9 +1,12 @@
-import { type NextPage } from "next";
 import Link from "next/link";
 
 import { api } from "../../utils/api";
 
-const SpeakerPage: NextPage = () => {
+import Layout from "../../components/layout";
+
+import { NextPageWithLayout } from "../_app";
+
+const SpeakerPage: NextPageWithLayout = () => {
   const talkSessions = api.talkSession.getAllByUserId.useQuery();
 
   return (
@@ -24,6 +27,10 @@ const SpeakerPage: NextPage = () => {
       </main>
     </div>
   );
+};
+
+SpeakerPage.getLayout = (page) => {
+  return <Layout>{page}</Layout>;
 };
 
 export default SpeakerPage;
