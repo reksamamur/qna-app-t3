@@ -18,3 +18,7 @@ export const registerSchema = z.object({
   // Don't do this, it is for demo purpose only
   password: z.string().min(3),
 });
+
+export const joinTalkSessionSchema = z.object({
+  code: z.string().min(1),
+});
