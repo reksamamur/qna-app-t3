@@ -52,9 +52,11 @@ const JoinModal = ({
                   Join Talk Session
                 </Dialog.Title>
                 <form
-                  onSubmit={form.handleSubmit((values) =>
-                    router.push(`/talk-session/${values.code}`)
-                  )}
+                  onSubmit={
+                    void form.handleSubmit((values) =>
+                      router.push(`/talk-session/${values.code}`)
+                    )
+                  }
                   className="mt-4 flex flex-col gap-4"
                 >
                   <input

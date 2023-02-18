@@ -1,5 +1,5 @@
 import { HandThumbUpIcon } from "@heroicons/react/24/outline";
-import { Question, User } from "@prisma/client";
+import type { Question, User } from "@prisma/client";
 import { api } from "@utils/api";
 import { classNames } from "@utils/utils";
 import QuestionCard from "./question-card";
@@ -27,8 +27,8 @@ const QuestionGrid = (props: {
             <span className="text-gray-500">{question.user.email}</span>
             <button
               disabled={question.isAnswered}
-              onClick={async () =>
-                await markAsAnsweredMutation.mutateAsync({
+              onClick={() =>
+                markAsAnsweredMutation.mutate({
                   questionId: question.id,
                 })
               }

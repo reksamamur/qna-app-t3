@@ -22,13 +22,15 @@ const QuestionInput = (props: { talkSessionId: string }) => {
 
   return (
     <form
-      onSubmit={form.handleSubmit(
-        async (values) => {
-          await addQuestionMutation.mutateAsync(values);
-          form.reset();
-        },
-        (error) => console.table(error)
-      )}
+      onSubmit={
+        void form.handleSubmit(
+          (values) =>
+            addQuestionMutation.mutate(values, {
+              onSuccess: () => form.reset(),
+            }),
+          (error) => console.table(error)
+        )
+      }
       className="space-y-2"
     >
       <input type="hidden" {...form.register("talkSessionId")} />

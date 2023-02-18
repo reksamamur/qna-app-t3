@@ -1,10 +1,11 @@
+import type { TypeOf } from "zod";
 import type { NextPage } from "next";
-import { useZodForm } from "@utils/form";
-import { loginSchema } from "@utils/zodSchema";
 import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { TypeOf } from "zod";
+
+import { useZodForm } from "@utils/form";
+import { loginSchema } from "@utils/zodSchema";
 
 const LoginPage: NextPage = () => {
   const form = useZodForm({
@@ -15,25 +16,25 @@ const LoginPage: NextPage = () => {
     },
   });
 
-  async function handleGoogleSignIn() {
-    signIn("google");
+  function handleGoogleSignIn() {
+    void signIn("google");
   }
 
-  async function handlePasswordlessSignIn(
+  function handlePasswordlessSignIn(
     data: Pick<TypeOf<typeof loginSchema>, "email">
   ) {
-    signIn("email", { ...data });
+    void signIn("email", { ...data });
   }
 
-  async function handleSignIn(data: TypeOf<typeof loginSchema>) {
-    signIn("credentials", { ...data });
+  function handleSignIn(data: TypeOf<typeof loginSchema>) {
+    void signIn("credentials", { ...data });
   }
 
   return (
     <div className="grid min-h-screen grid-cols-3 items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] p-4">
       <div className="col-start-2 col-end-2 flex flex-col gap-10">
         <div>
-          <img
+          <Image
             className="mx-auto h-12 w-auto"
             src="https://tailwindui.com/img/logos/mark.svg?color=white"
             alt="QnA"
@@ -53,7 +54,7 @@ const LoginPage: NextPage = () => {
         </div>
         <div className="h-full rounded bg-slate-50">
           <form
-            onSubmit={form.handleSubmit(handleSignIn)}
+            onSubmit={void form.handleSubmit(handleSignIn)}
             className="grid gap-5 p-4"
           >
             <div className="rounder-xl border">

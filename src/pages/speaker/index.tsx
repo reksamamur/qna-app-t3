@@ -1,15 +1,15 @@
+import { useState } from "react";
+import Head from "next/head";
 import Link from "next/link";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
 
-import { api } from "../../utils/api";
+import type { NextPageWithLayout } from "../_app";
 
-import Layout from "../../components/layout";
-
-import { NextPageWithLayout } from "../_app";
-import Head from "next/head";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import Layout from "src/components/layout";
 import CreateModal from "src/components/create-modal";
-import { useState } from "react";
+
+import { api } from "@utils/api";
 
 const SpeakerPage: NextPageWithLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
