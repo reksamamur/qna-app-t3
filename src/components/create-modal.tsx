@@ -17,11 +17,11 @@ const CreateModal = ({
   const router = useRouter();
 
   const mutation = api.talkSession.addTalkSession.useMutation({
-    onError(error) {
+    onError(error: { message: string }) {
       setError(error.message);
     },
     onSuccess(data) {
-      router.push(`/talk-session/${data.id}`);
+      void router.push(`/talk-session/${data.id}`);
     },
   });
 
@@ -66,9 +66,9 @@ const CreateModal = ({
                   Create a Talk Session
                 </Dialog.Title>
                 <form
-                  onSubmit={form.handleSubmit(
-                    async (values) => await mutation.mutateAsync(values)
-                  )}
+                  onSubmit={
+                    void form.handleSubmit((values) => mutation.mutate(values))
+                  }
                   className="mt-4 flex flex-col gap-4"
                 >
                   <input

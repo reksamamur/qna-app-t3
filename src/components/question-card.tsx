@@ -1,4 +1,4 @@
-import { Question } from "@prisma/client";
+import type { Question } from "@prisma/client";
 
 const QuestionCard = (props: {
   key?: React.Key;

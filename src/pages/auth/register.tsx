@@ -1,7 +1,9 @@
 import type { NextPage } from "next";
+import Link from "next/link";
+import Image from "next/image";
+
 import { useZodForm } from "@utils/form";
 import { registerSchema } from "@utils/zodSchema";
-import Link from "next/link";
 
 const RegisterPage: NextPage = () => {
   const form = useZodForm({
@@ -17,7 +19,7 @@ const RegisterPage: NextPage = () => {
     <div className="grid min-h-screen grid-cols-3 items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] p-4">
       <div className="col-start-2 col-end-2 flex flex-col gap-10">
         <div>
-          <img
+          <Image
             className="mx-auto h-12 w-auto"
             src="https://tailwindui.com/img/logos/mark.svg?color=white"
             alt="QnA"
@@ -37,10 +39,12 @@ const RegisterPage: NextPage = () => {
         </div>
         <div className="h-full rounded bg-slate-50">
           <form
-            onSubmit={form.handleSubmit((values) => {
-              //TODO
-              console.log(values);
-            })}
+            onSubmit={
+              void form.handleSubmit((values) => {
+                //TODO
+                console.log(values);
+              })
+            }
             className="grid gap-5 p-4"
           >
             <div className="rounder-xl border">
