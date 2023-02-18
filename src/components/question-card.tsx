@@ -1,24 +1,25 @@
 import { Question } from "@prisma/client";
-import { User } from "next-auth";
 
 const QuestionCard = (props: {
   key?: React.Key;
-  children?: JSX.Element;
-  question: Question & {
-    user: User;
-  };
-}) => (
-  <div
-    key={props.key}
-    className="flex w-full flex-col gap-2 rounded-lg border border-gray-200 bg-white p-6 shadow"
-  >
-    <span className="text-gray-500">{props.question.user.email}</span>
-    <h3 className="flex-grow text-lg">{props.question.question}</h3>
-    <div className="flex items-end justify-between">
-      <span>{props.question.createdAt?.toLocaleTimeString()}</span>
-      {props.children}
+  children?: JSX.Element[];
+  question: Question;
+}) => {
+  const hasChildren = props.children?.length ?? 0 > 1;
+
+  return (
+    <div
+      key={props.key}
+      className="flex w-full flex-col gap-2 rounded-lg border border-gray-200 bg-white p-6 shadow"
+    >
+      {hasChildren && props.children?.at(0)}
+      <h3 className="flex-grow text-lg">{props.question.question}</h3>
+      <div className="flex items-end justify-between">
+        <span>{props.question.createdAt?.toLocaleTimeString()}</span>
+        {hasChildren ? props.children?.at(1) : props.children?.at(0)}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default QuestionCard;

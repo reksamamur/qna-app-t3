@@ -24,6 +24,7 @@ const QuestionGrid = (props: {
         ?.filter((question) => question.isAnswered === props.isAnswered)
         .map((question) => (
           <QuestionCard key={question.id} question={question}>
+            <span className="text-gray-500">{question.user.email}</span>
             <button
               disabled={question.isAnswered}
               onClick={async () =>
