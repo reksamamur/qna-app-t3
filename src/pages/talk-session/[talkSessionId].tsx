@@ -1,111 +1,67 @@
-import { useState } from "react";
-import { type NextPage } from "next";
 import { useRouter } from "next/router";
-import { api } from "../../utils/api";
-import { useZodForm } from "../../utils/form";
-import { addQuestionSchema } from "../../utils/zodSchema";
+import Head from "next/head";
 
-const TalkSessionDetailPage: NextPage = () => {
-  const [error, setError] = useState("");
+import Layout from "src/components/layout";
+
+import type { NextPageWithLayout } from "../_app";
+
+import { api } from "@utils/api";
+import QuestionGrid from "src/components/question-grid";
+import QuestionInput from "src/components/question-input";
+import { QrCodeIcon } from "@heroicons/react/24/outline";
+
+const TalkSessionDetailPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { talkSessionId } = router.query;
   const talkSessionQuery = api.talkSession.getAllQuestionInSession.useQuery(
     {
       talkSessionId: talkSessionId as string,
     },
-    { refetchInterval: 30 * 1000 } // Thirty seconds
+    {
+      enabled: typeof talkSessionId !== "undefined",
+      refetchInterval: 30 * 1000, // Thirty seconds
+    }
   );
-  const talkSessionRouter = api.useContext().talkSession;
-  const markAsAnsweredMutation =
-    api.question.markQuestionAsAnswered.useMutation({
-      async onSuccess() {
-        await talkSessionRouter.getAllQuestionInSession.invalidate();
-      },
-      onError(error) {
-        setError(error.message);
-      },
-    });
-  const addQuestionMutation = api.question.addQuestion.useMutation({
-    async onSuccess() {
-      await talkSessionRouter.getAllQuestionInSession.invalidate();
-    },
-    onError(error) {
-      setError(error.message);
-    },
-  });
   const talkSession = talkSessionQuery.data;
-
-  const form = useZodForm({
-    schema: addQuestionSchema,
-    defaultValues: { question: "" },
-    values: { question: "", talkSessionId: talkSessionId as string },
-  });
 
   return (
     <>
-      {error !== "" && <p className="text-red-500">{error}</p>}
-      <main>
-        <div>
-          <span>{talkSession?.createdAt?.toLocaleDateString()}</span>
-          <h2>{talkSession?.name}</h2>
-        </div>
-        <div>
-          {talkSession?.question.map((question) => (
-            <div key={question.id}>
-              <span>{question.user.email}</span>
-              <h3>{question.question}</h3>
-              <span>{question.createdAt.toLocaleDateString()}</span>
-              <button
-                disabled={question.isAnswered}
-                onClick={async () =>
-                  await markAsAnsweredMutation.mutateAsync({
-                    questionId: question.id,
-                  })
-                }
-              >
-                Answered
-              </button>
-            </div>
-          ))}
-        </div>
-        <div>
-          <form
-            onSubmit={form.handleSubmit(
-              async (values) => {
-                await addQuestionMutation.mutateAsync(values);
-                form.reset();
-              },
-              (error) => console.table(error)
-            )}
-            className="space-y-2"
+      <Head>
+        <title>
+          QnA App - Talk Session {talkSession && `- ${talkSession.name}`}
+        </title>
+      </Head>
+
+      <div className="mx-auto flex max-h-full w-full max-w-7xl flex-col gap-2 p-6 sm:gap-6 lg:p-8">
+        <div className="flex flex-row justify-end">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded bg-[#461091] px-3 py-2 text-center text-sm  font-semibold text-white hover:bg-[#2e026d] focus:outline-none focus:ring-4 focus:ring-blue-300"
           >
-            <input type="hidden" {...form.register("talkSessionId")} />
-            <div className="flex flex-row">
-              <input
-                {...form.register("question")}
-                placeholder="Enter a question"
-                className="border"
-              />
-
-              <button
-                type="submit"
-                disabled={addQuestionMutation.isLoading}
-                className="bg-secondary-500 border p-2 font-bold"
-              >
-                {addQuestionMutation.isLoading ? "Loading" : "Submit"}
-              </button>
-            </div>
-
-            {form.formState.errors.question?.message && (
-              <p className="text-red-700">
-                {form.formState.errors.question?.message}
-              </p>
-            )}
-          </form>
+            Share
+            <QrCodeIcon className="h-5 w-5" aria-hidden="true" />
+          </button>
         </div>
-      </main>
+        <div className="grid max-w-full items-center gap-4 rounded border-2 border-indigo-800 p-4">
+          <h3 className="text-xl">Talk Session - {talkSession?.name}</h3>
+          <span>{talkSession?.createdAt?.toLocaleDateString()}</span>
+        </div>
+        <div className="grid flex-grow gap-4">
+          <h2 className="text-lg">New Questions</h2>
+          <QuestionGrid questions={talkSession?.question} isAnswered={false} />
+          <h2 className="text-lg">Answered Questions</h2>
+          <QuestionGrid questions={talkSession?.question} isAnswered={true} />
+        </div>
+        <div>
+          <QuestionInput talkSessionId={talkSessionId as string} />
+        </div>
+      </div>
     </>
   );
+};
+
+TalkSessionDetailPage.getLayout = (page) => {
+  return <Layout>{page}</Layout>;
 };
 
 export default TalkSessionDetailPage;

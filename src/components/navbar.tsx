@@ -4,9 +4,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Fragment } from "react";
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import { classNames } from "@utils/utils";
 
 type NavigationRoute = "Speaker" | "Participant";
 
