@@ -6,8 +6,13 @@ import { signIn } from "next-auth/react";
 
 import { useZodForm } from "@utils/form";
 import { loginSchema } from "@utils/zodSchema";
+import { useRouter } from "next/router";
+import { authErrors, type SignInErrorTypes } from "@utils/authError";
 
 const LoginPage: NextPage = () => {
+  const router = useRouter();
+  const error = router.query.error as SignInErrorTypes | undefined;
+  const errorMessage = error && (authErrors[error] ?? authErrors.default);
   const form = useZodForm({
     schema: loginSchema,
     defaultValues: {
@@ -34,11 +39,13 @@ const LoginPage: NextPage = () => {
     <div className="grid min-h-screen grid-cols-3 items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] p-4">
       <div className="col-start-2 col-end-2 flex flex-col gap-10">
         <div>
-          <Image
-            className="mx-auto h-12 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=white"
-            alt="QnA"
-          />
+          <picture>
+            <img
+              className="mx-auto h-12 w-auto"
+              src="https://tailwindui.com/img/logos/mark.svg?color=white"
+              alt="QnA"
+            />
+          </picture>
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-white">
             Sign in to your account
           </h2>
@@ -102,6 +109,14 @@ const LoginPage: NextPage = () => {
                 width={20}
               />
             </button>
+            {errorMessage && (
+              <div
+                className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-gray-800 dark:text-red-400"
+                role="alert"
+              >
+                {errorMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>
