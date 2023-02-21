@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import type { ReactElement } from "react";
 
 import Navbar from "./navbar";
+import UnauthorizedPage from "./unauthorized-page";
 
 const Layout = ({
   children,
@@ -21,7 +22,7 @@ const Layout = ({
     );
   }
 
-  return <h3>Unauthenticated</h3>;
+  return <UnauthorizedPage />;
 };
 
 export default Layout;
