@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 import { classNames } from "@utils/utils";
-import Image from "next/image";
 
 type NavigationRoute = "Speaker" | "Participant";
 
@@ -45,16 +44,20 @@ const Navbar = ({ route }: { route?: NavigationRoute }) => {
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <Link href="/">
                   <div className="flex flex-shrink-0 items-center">
-                    <Image
-                      className="block h-8 w-auto lg:hidden"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                      alt="Your Company"
-                    />
-                    <Image
-                      className="hidden h-8 w-auto lg:block"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                      alt="Your Company"
-                    />
+                    <picture>
+                      <img
+                        className="block h-8 w-auto lg:hidden"
+                        src="https://tailwindui.com/img/logos/mark.svg?color=white"
+                        alt="Your Company"
+                      />
+                    </picture>
+                    <picture>
+                      <img
+                        className="hidden h-8 w-auto lg:block"
+                        src="https://tailwindui.com/img/logos/mark.svg?color=white"
+                        alt="Your Company"
+                      />
+                    </picture>
                   </div>
                 </Link>
                 <div className="hidden sm:ml-6 sm:block">
@@ -83,14 +86,16 @@ const Navbar = ({ route }: { route?: NavigationRoute }) => {
                   <div>
                     <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open user menu</span>
-                      <Image
-                        className="h-8 w-8 rounded-full"
-                        src={
-                          session?.user.image ||
-                          `https://ui-avatars.com/api/?name=${username}&color=random`
-                        }
-                        alt={username}
-                      />
+                      <picture>
+                        <img
+                          className="h-8 w-8 rounded-full"
+                          src={
+                            session?.user.image ||
+                            `https://ui-avatars.com/api/?name=${username}&color=random`
+                          }
+                          alt={username}
+                        />
+                      </picture>
                     </Menu.Button>
                   </div>
                   <Transition
